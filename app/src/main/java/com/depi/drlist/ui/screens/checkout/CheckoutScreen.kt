@@ -27,6 +27,7 @@ fun CheckoutScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var shippingAddress by remember { mutableStateOf("") }
+    var selectedPaymentMethod by remember { mutableStateOf(PaymentMethod.CASH_ON_DELIVERY) }
     var showSuccessDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(uiState) {
@@ -56,14 +57,30 @@ fun CheckoutScreen(
             is CheckoutUiState.Loading -> {
                 LoadingIndicator(modifier = Modifier.padding(paddingValues))
             }
+            is CheckoutUiState.ProcessingPayment -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        CircularProgressIndicator()
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text("Processing payment...", fontWeight = FontWeight.Medium)
+                    }
+                }
+            }
             is CheckoutUiState.Success -> {
                 CheckoutContent(
                     items = state.items,
                     totalAmount = state.totalAmount,
                     shippingAddress = shippingAddress,
                     onAddressChange = { shippingAddress = it },
+                    selectedPaymentMethod = selectedPaymentMethod,
+                    onPaymentMethodChange = { selectedPaymentMethod = it },
                     onPlaceOrder = {
-                        viewModel.placeOrder(shippingAddress)
+                        viewModel.placeOrder(shippingAddress, selectedPaymentMethod)
                     },
                     modifier = Modifier.padding(paddingValues)
                 )
@@ -97,6 +114,8 @@ fun CheckoutContent(
     totalAmount: Double,
     shippingAddress: String,
     onAddressChange: (String) -> Unit,
+    selectedPaymentMethod: PaymentMethod,
+    onPaymentMethodChange: (PaymentMethod) -> Unit,
     onPlaceOrder: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -151,6 +170,27 @@ fun CheckoutContent(
             maxLines = 5
         )
 
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Payment Method Selection
+        Text(
+            text = "Payment Method",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            PaymentMethod.values().forEach { method ->
+                PaymentMethodCard(
+                    paymentMethod = method,
+                    isSelected = selectedPaymentMethod == method,
+                    onClick = { onPaymentMethodChange(method) }
+                )
+            }
+        }
+
         Spacer(modifier = Modifier.weight(1f))
 
         // Total and Place Order
@@ -201,6 +241,60 @@ fun CheckoutContent(
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun PaymentMethodCard(
+    paymentMethod: PaymentMethod,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected) 
+                MaterialTheme.colorScheme.primaryContainer 
+            else 
+                MaterialTheme.colorScheme.surface
+        ),
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(
+                    text = when (paymentMethod) {
+                        PaymentMethod.CREDIT_CARD -> "Credit Card"
+                        PaymentMethod.DEBIT_CARD -> "Debit Card"
+                        PaymentMethod.CASH_ON_DELIVERY -> "Cash on Delivery"
+                        PaymentMethod.PAYPAL -> "PayPal"
+                    },
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = when (paymentMethod) {
+                        PaymentMethod.CREDIT_CARD -> "Visa, Mastercard, Amex"
+                        PaymentMethod.DEBIT_CARD -> "Direct bank payment"
+                        PaymentMethod.CASH_ON_DELIVERY -> "Pay when you receive"
+                        PaymentMethod.PAYPAL -> "Secure PayPal payment"
+                    },
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            RadioButton(
+                selected = isSelected,
+                onClick = onClick
+            )
         }
     }
 }
