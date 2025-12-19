@@ -19,7 +19,9 @@ import coil.compose.AsyncImage
 import com.depi.drlist.data.model.Product
 
 @Composable
-fun ProductCard(
+fun
+
+        ProductCard(
     product: Product,
     onProductClick: () -> Unit,
     onAddToCartClick: () -> Unit,
