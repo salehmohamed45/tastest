@@ -225,7 +225,7 @@ private fun OrderDetailContent(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = item.productName,
+                            text = item.product.name,
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Medium
                         )
@@ -237,7 +237,7 @@ private fun OrderDetailContent(
                     }
                     Text(
                         text = NumberFormat.getCurrencyInstance(Locale.US)
-                            .format(item.productPrice * item.quantity),
+                            .format(item.product.price * item.quantity),
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Bold
                     )
