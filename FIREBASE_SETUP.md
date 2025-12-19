@@ -11,6 +11,7 @@ Fields:
 - `name`: String
 - `phoneNumber`: String (optional)
 - `address`: String (optional)
+- `role`: String ("admin" or "customer") - Default: "customer"
 
 ### 2. `products` Collection
 Path: `/products/{productId}`
@@ -191,31 +192,56 @@ Fields:
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow all users to read products
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Products - everyone can read, only admins can write
     match /products/{productId} {
       allow read: if true;
-      allow write: if false; // Products should be managed through admin panel
+      allow write: if isAdmin();
     }
     
-    // Users can only access their own user document
+    // Users can access their own document, admins can read all
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      allow update: if isAuthenticated() && request.auth.uid == userId;
     }
     
-    // Users can only access their own cart
+    // Carts - users access their own
     match /carts/{userId}/items/{itemId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isAuthenticated() && request.auth.uid == userId;
     }
     
-    // Users can only read their own orders
+    // Orders - users can read their own, admins can read all
     match /orders/{orderId} {
-      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
-      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-      allow update: if false; // Orders cannot be updated by users
+      allow read: if isAuthenticated() && 
+                    (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if isAdmin(); // Only admins can update order status
     }
   }
 }
 ```
+
+## Assigning Admin Roles
+
+By default, all new users are created with the role "customer". To make a user an admin:
+
+1. Go to Firebase Console → Firestore Database
+2. Navigate to the `users` collection
+3. Find the user document by their userId
+4. Edit the document and change the `role` field from "customer" to "admin"
+5. Save the changes
+
+The user will have admin privileges on their next login/app refresh.
 
 ## Setup Instructions
 

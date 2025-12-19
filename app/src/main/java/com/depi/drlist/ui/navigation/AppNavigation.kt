@@ -262,7 +262,7 @@ fun MainScreen(
                     onAdminDashboardClick = {
                         navController.navigate(Route.AdminDashboard.route)
                     },
-                    isAdmin = currentUser?.isAdmin ?: false
+                    isAdmin = currentUser?.role == "admin"
                 )
             }
 

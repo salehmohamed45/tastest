@@ -11,5 +11,5 @@ data class UserEntity(
     val name: String,
     val phoneNumber: String?,
     val address: String?,
-    val isAdmin: Boolean = false
+    val role: String = "customer"
 )
