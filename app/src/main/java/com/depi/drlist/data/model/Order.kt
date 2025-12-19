@@ -7,5 +7,6 @@ data class Order(
     val totalAmount: Double = 0.0,
     val orderDate: Long = System.currentTimeMillis(),
     val status: String = "Pending",
-    val shippingAddress: String = ""
+    val shippingAddress: String = "",
+    val paymentMethod: String = "CASH_ON_DELIVERY"
 )

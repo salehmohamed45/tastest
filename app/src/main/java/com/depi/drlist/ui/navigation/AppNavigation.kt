@@ -25,6 +25,11 @@ import com.depi.drlist.ui.screens.home.HomeScreen
 import com.depi.drlist.ui.screens.login.LoginScreen
 import com.depi.drlist.ui.screens.login.LoginViewModel
 import com.depi.drlist.ui.screens.profile.ProfileScreen
+import com.depi.drlist.ui.screens.reset.PasswordResetScreen
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.depi.drlist.ui.screens.detail.ProductDetailScreen
+import com.depi.drlist.ui.screens.reset.PasswordResetViewModel
 import com.depi.drlist.ui.screens.search.SearchScreen
 
 sealed class BottomNavItem(
@@ -57,6 +62,19 @@ fun AppNavigation() {
                     navController.navigate(Route.Home.route) {
                         popUpTo(Route.Login.route) { inclusive = true }
                     }
+                },
+                onNavigateToPasswordReset = {
+                    navController.navigate(Route.PasswordReset.route)
+                }
+            )
+        }
+
+        composable(Route.PasswordReset.route) {
+            val passwordResetViewModel: PasswordResetViewModel = viewModel()
+            PasswordResetScreen(
+                viewModel = passwordResetViewModel,
+                onNavigateBack = {
+                    navController.navigateUp()
                 }
             )
         }
@@ -80,6 +98,20 @@ fun AppNavigation() {
                     navController.navigate(Route.Home.route) {
                         popUpTo(Route.Home.route) { inclusive = true }
                     }
+                }
+            )
+        }
+
+        composable(
+            route = Route.ProductDetail.route,
+            arguments = listOf(navArgument("productId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId") ?: return@composable
+            ProductDetailScreen(
+                productId = productId,
+                onBackClick = { navController.navigateUp() },
+                onCartClick = {
+                    navController.navigate(BottomNavItem.Cart.route)
                 }
             )
         }
@@ -135,7 +167,7 @@ fun MainScreen(
                         mainNavController.navigate(BottomNavItem.Cart.route)
                     },
                     onProductClick = { product ->
-                        // Could navigate to product detail screen if needed
+                        navController.navigate(Route.ProductDetail.createRoute(product.id))
                     }
                 )
             }
@@ -148,7 +180,7 @@ fun MainScreen(
                         }
                     },
                     onProductClick = { product ->
-                        // Could navigate to product detail screen if needed
+                        navController.navigate(Route.ProductDetail.createRoute(product.id))
                     },
                     onAddToCartClick = { product ->
                         // Add to cart handled in SearchViewModel

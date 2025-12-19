@@ -249,21 +249,54 @@ Key dependencies in `app/build.gradle.kts`:
 ## Known Limitations
 
 1. **Build Environment**: The project requires internet access to download Android Gradle Plugin and dependencies
-2. **Image URLs**: Sample products use Unsplash placeholder images
-3. **Payment**: No payment gateway integration (placeholder functionality)
-4. **Product Details**: No dedicated product detail screen (can be added)
-5. **Wishlist**: Not implemented in current version
-6. **Reviews**: No product review system
+2. **Image URLs**: Sample products use Unsplash placeholder images  
+3. **Email Notifications**: Email service for order confirmations not yet implemented
+4. **Admin Dashboard**: Admin panel for managing orders not yet implemented
+5. **Offline Sync**: Room database infrastructure ready but sync logic pending implementation
+
+## Recently Added Features (Latest Update)
+
+### Password Reset ✅
+- Complete password reset flow via email
+- Firebase Auth integration
+- Link from login screen
+
+### Enhanced Product Catalog ✅
+- Advanced filtering (size, color, brand, price range)
+- Multiple sort options (price, newest)
+- Filter and sort dialogs
+- Updated product model with brand and colors
+
+### Product Detail Screen ✅
+- Dedicated product detail page
+- Image display
+- Size and color selection
+- Quantity selector
+- Stock status indicator
+- Add to cart functionality
+
+### Payment Integration ✅
+- Multiple payment methods (Credit/Debit Card, COD, PayPal)
+- Mock payment processing
+- Payment method selection UI
+- Processing states with loading indicators
+
+### Room Database ✅
+- Complete offline database infrastructure
+- Entities for all data models
+- DAOs with Flow-based queries
+- Type converters for complex types
+- Ready for offline-first implementation
 
 ## Future Enhancements
 
-- Product detail screen with more images
+- Complete offline-first repository pattern implementation
+- Data synchronization logic
+- Email notifications for orders
+- Admin dashboard for order management
 - Product reviews and ratings
 - Wishlist functionality
-- Order tracking with notifications
-- Payment gateway integration
-- Admin panel for product management
-- Push notifications for order updates
+- Order tracking with push notifications
 - Social media integration
 - Size guide
 - Product recommendations

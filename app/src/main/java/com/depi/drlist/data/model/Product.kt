@@ -8,5 +8,8 @@ data class Product(
     val imageUrl: String = "",
     val category: String = "",
     val sizes: List<String> = emptyList(),
-    val inStock: Boolean = true
+    val colors: List<String> = emptyList(),
+    val brand: String = "",
+    val inStock: Boolean = true,
+    val createdAt: Long = 0L
 )
