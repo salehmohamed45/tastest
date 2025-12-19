@@ -27,7 +27,8 @@ import java.util.*
 fun ProfileScreen(
     viewModel: ProfileViewModel = viewModel(),
     onBackClick: () -> Unit,
-    onSignOutClick: () -> Unit
+    onSignOutClick: () -> Unit,
+    onViewOrderHistory: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -62,6 +63,7 @@ fun ProfileScreen(
                     user = state.user,
                     orders = state.orders,
                     onEditClick = { showEditDialog = true },
+                    onViewOrderHistory = onViewOrderHistory,
                     modifier = Modifier.padding(paddingValues)
                 )
 
@@ -99,6 +101,7 @@ fun ProfileContent(
     user: User,
     orders: List<com.depi.drlist.data.model.Order>,
     onEditClick: () -> Unit,
+    onViewOrderHistory: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -111,11 +114,19 @@ fun ProfileContent(
         }
 
         item {
-            Text(
-                text = "Order History",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Order History",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                TextButton(onClick = onViewOrderHistory) {
+                    Text("View All")
+                }
+            }
         }
 
         if (orders.isEmpty()) {
@@ -134,7 +145,7 @@ fun ProfileContent(
                 }
             }
         } else {
-            items(orders) { order ->
+            items(orders.take(3)) { order ->
                 OrderCard(order = order)
             }
         }
