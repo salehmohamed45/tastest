@@ -28,7 +28,8 @@ enum class AuthScreenType {
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
+    onNavigateToPasswordReset: () -> Unit = {}
 ) {
     var currentScreen by remember { mutableStateOf(AuthScreenType.LOGIN) }
     val authState by viewModel.authState.collectAsState()
@@ -88,7 +89,11 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             when (currentScreen) {
-                AuthScreenType.LOGIN -> LoginForm(viewModel = viewModel, authState = authState)
+                AuthScreenType.LOGIN -> LoginForm(
+                    viewModel = viewModel, 
+                    authState = authState,
+                    onNavigateToPasswordReset = onNavigateToPasswordReset
+                )
                 AuthScreenType.SIGNUP -> SignUpForm(viewModel = viewModel, authState = authState)
             }
         }
@@ -152,7 +157,11 @@ fun AuthTabButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-fun LoginForm(viewModel: LoginViewModel, authState: AuthState) {
+fun LoginForm(
+    viewModel: LoginViewModel, 
+    authState: AuthState,
+    onNavigateToPasswordReset: () -> Unit = {}
+) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -183,7 +192,25 @@ fun LoginForm(viewModel: LoginViewModel, authState: AuthState) {
                 singleLine = true
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Forgot Password Link
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                androidx.compose.foundation.text.ClickableText(
+                    text = androidx.compose.ui.text.AnnotatedString("Forgot Password?"),
+                    onClick = { onNavigateToPasswordReset() },
+                    style = androidx.compose.ui.text.TextStyle(
+                        color = Color(0xFF2C3E50),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
 
             Button(
                 onClick = { viewModel.signIn(email, password) },

@@ -25,7 +25,8 @@ import com.depi.drlist.ui.screens.home.HomeScreen
 import com.depi.drlist.ui.screens.login.LoginScreen
 import com.depi.drlist.ui.screens.login.LoginViewModel
 import com.depi.drlist.ui.screens.profile.ProfileScreen
-import com.depi.drlist.ui.screens.search.SearchScreen
+import com.depi.drlist.ui.screens.reset.PasswordResetScreen
+import com.depi.drlist.ui.screens.reset.PasswordResetViewModel
 
 sealed class BottomNavItem(
     val route: String,
@@ -57,6 +58,19 @@ fun AppNavigation() {
                     navController.navigate(Route.Home.route) {
                         popUpTo(Route.Login.route) { inclusive = true }
                     }
+                },
+                onNavigateToPasswordReset = {
+                    navController.navigate(Route.PasswordReset.route)
+                }
+            )
+        }
+
+        composable(Route.PasswordReset.route) {
+            val passwordResetViewModel: PasswordResetViewModel = viewModel()
+            PasswordResetScreen(
+                viewModel = passwordResetViewModel,
+                onNavigateBack = {
+                    navController.navigateUp()
                 }
             )
         }
