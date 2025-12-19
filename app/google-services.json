@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "673542865973",
+    "project_id": "dr-list-5c34e",
+    "storage_bucket": "dr-list-5c34e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:673542865973:android:550b1e28bd7f21c093dd7c",
+        "android_client_info": {
+          "package_name": "com.depi.drlist"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdLbJ5iOFIRIpSD1nkqlNo3hy9JW1tT7Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
