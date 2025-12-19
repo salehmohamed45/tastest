@@ -84,4 +84,18 @@ class AuthRepository {
             Result.failure(e)
         }
     }
+
+    suspend fun getUserById(userId: String): Result<User> {
+        return try {
+            val userDoc = firestore.collection("users").document(userId).get().await()
+            val user = userDoc.toObject(User::class.java)
+            if (user != null) {
+                Result.success(user)
+            } else {
+                Result.failure(Exception("User not found"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

@@ -5,5 +5,6 @@ data class User(
     val email: String = "",
     val name: String = "",
     val phoneNumber: String? = null,
-    val address: String? = null
+    val address: String? = null,
+    val isAdmin: Boolean = false
 )

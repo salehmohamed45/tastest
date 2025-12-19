@@ -72,4 +72,22 @@ class ProductRepository {
             Result.failure(e)
         }
     }
+
+    // Admin method to add new product
+    suspend fun addProduct(product: Product): Result<String> {
+        return try {
+            val productWithTimestamp = product.copy(
+                createdAt = System.currentTimeMillis()
+            )
+            val docRef = if (product.id.isEmpty()) {
+                firestore.collection("products").document()
+            } else {
+                firestore.collection("products").document(product.id)
+            }
+            docRef.set(productWithTimestamp).await()
+            Result.success(docRef.id)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }
