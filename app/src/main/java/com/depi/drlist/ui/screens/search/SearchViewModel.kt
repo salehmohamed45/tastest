@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 sealed class SearchUiState {
-    object Idle : SearchUiState()
-    object Loading : SearchUiState()
+    data object Idle : SearchUiState()
+    data object Loading : SearchUiState()
     data class Success(val products: List<Product>) : SearchUiState()
     data class Error(val message: String) : SearchUiState()
 }
