@@ -113,6 +113,7 @@ fun PatientsListHeader(navController: NavController) {
                 Text("View and manage all patients", fontSize = 14.sp, color = Color.White.copy(alpha = 0.8f))
             }
         },
+
         navigationIcon = {
             IconButton(onClick = { navController.popBackStack() }) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
