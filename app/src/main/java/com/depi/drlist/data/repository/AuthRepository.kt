@@ -21,11 +21,12 @@ class AuthRepository {
                 .build()
             firebaseUser.updateProfile(profileUpdates).await()
             
-            // Create user document in Firestore
+            // Create user document in Firestore with default role
             val user = User(
                 uid = firebaseUser.uid,
                 email = firebaseUser.email ?: "",
-                name = name
+                name = name,
+                role = "customer"
             )
             firestore.collection("users").document(firebaseUser.uid).set(user).await()
             
@@ -45,7 +46,8 @@ class AuthRepository {
             val user = userDoc.toObject(User::class.java) ?: User(
                 uid = firebaseUser.uid,
                 email = firebaseUser.email ?: "",
-                name = firebaseUser.displayName ?: ""
+                name = firebaseUser.displayName ?: "",
+                role = "customer" // Default to customer for backward compatibility
             )
             
             Result.success(user)
@@ -96,6 +98,28 @@ class AuthRepository {
             }
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    suspend fun isAdmin(): Boolean {
+        val firebaseUser = auth.currentUser ?: return false
+        return try {
+            val userDoc = firestore.collection("users").document(firebaseUser.uid).get().await()
+            val user = userDoc.toObject(User::class.java)
+            user?.role == "admin"
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    suspend fun isCustomer(): Boolean {
+        val firebaseUser = auth.currentUser ?: return false
+        return try {
+            val userDoc = firestore.collection("users").document(firebaseUser.uid).get().await()
+            val user = userDoc.toObject(User::class.java)
+            user?.role == "customer"
+        } catch (e: Exception) {
+            true // Default to customer for backward compatibility
         }
     }
 }

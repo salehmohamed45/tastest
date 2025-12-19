@@ -11,6 +11,16 @@ A fully functional men's clothing e-commerce Android application built with Jetp
 - Persistent user sessions
 - Sign out functionality
 
+### User Roles
+- **Customer Role**: Default role for all new users with access to shopping features
+- **Admin Role**: Manually assigned role with additional privileges:
+  - Add/edit/delete products
+  - View all users
+  - Manage all orders
+  - Update order statuses
+
+To assign admin role, update the `role` field in Firestore from "customer" to "admin".
+
 ### Product Browsing
 - Grid layout displaying products (2 columns)
 - Product cards showing: image, name, price, category

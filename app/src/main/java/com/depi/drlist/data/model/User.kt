@@ -6,6 +6,5 @@ data class User(
     val name: String = "",
     val phoneNumber: String? = null,
     val address: String? = null,
-    val
-    isAdmin: Boolean = false
+    val role: String = "customer"
 )
