@@ -2,6 +2,7 @@ package com.depi.drlist.ui.screens.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.depi.drlist.data.model.CartItem
 import com.depi.drlist.data.model.Product
 import com.depi.drlist.data.repository.CartRepository
 import com.depi.drlist.data.repository.ProductRepository

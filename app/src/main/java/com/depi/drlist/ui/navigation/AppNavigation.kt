@@ -29,6 +29,7 @@ import com.depi.drlist.ui.screens.reset.PasswordResetScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.depi.drlist.ui.screens.detail.ProductDetailScreen
+import com.depi.drlist.ui.screens.reset.PasswordResetViewModel
 import com.depi.drlist.ui.screens.search.SearchScreen
 
 sealed class BottomNavItem(
