@@ -21,8 +21,15 @@ class LoginViewModel : ViewModel() {
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState = _authState.asStateFlow()
 
-    private val _currentUser = MutableStateFlow<User?>(authRepository.getCurrentUser())
+    private val _currentUser = MutableStateFlow<User?>(null)
     val currentUser = _currentUser.asStateFlow()
+
+    init {
+        // Load current user on initialization
+        viewModelScope.launch {
+            _currentUser.value = authRepository.getCurrentUser()
+        }
+    }
 
     fun signUp(name: String, email: String, password: String) {
         if (name.isBlank() || email.isBlank() || password.isBlank()) {

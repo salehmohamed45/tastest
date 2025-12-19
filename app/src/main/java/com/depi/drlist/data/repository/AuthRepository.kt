@@ -60,13 +60,27 @@ class AuthRepository {
         auth.signOut()
     }
 
-    fun getCurrentUser(): User? {
-        val firebaseUser = auth.currentUser ?: return null
-        return User(
-            uid = firebaseUser.uid,
-            email = firebaseUser.email ?: "",
-            name = firebaseUser.displayName ?: ""
-        )
+    suspend fun getCurrentUser(): User? {
+        val firebaseUser = auth. currentUser ?: return null
+
+        return try {
+            // Fetch user from Firestore to get the role
+            val userDoc = firestore.collection("users").document(firebaseUser.uid).get().await()
+            userDoc.toObject(User::class.java) ?: User(
+                uid = firebaseUser.uid,
+                email = firebaseUser.email ?: "",
+                name = firebaseUser.displayName ?: "",
+                role = "customer" // Default
+            )
+        } catch (e: Exception) {
+            // If Firestore fails, return basic user
+            User(
+                uid = firebaseUser.uid,
+                email = firebaseUser.email ?:  "",
+                name = firebaseUser.displayName ?: "",
+                role = "customer"
+            )
+        }
     }
 
     suspend fun updateUserProfile(user: User): Result<Unit> {
