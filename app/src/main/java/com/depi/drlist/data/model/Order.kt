@@ -8,5 +8,12 @@ data class Order(
     val orderDate: Long = System.currentTimeMillis(),
     val status: String = "Pending",
     val shippingAddress: String = "",
-    val paymentMethod: String = "CASH_ON_DELIVERY"
+    val paymentMethod: String = "CASH_ON_DELIVERY",
+    val statusHistory: List<OrderStatusChange> = emptyList()
+)
+
+data class OrderStatusChange(
+    val status: String = "",
+    val timestamp: Long = System.currentTimeMillis(),
+    val changedBy: String = ""
 )

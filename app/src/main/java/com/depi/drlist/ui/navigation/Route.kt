@@ -11,4 +11,21 @@ sealed class Route(val route: String) {
     object ProductDetail : Route("product_detail/{productId}") {
         fun createRoute(productId: String) = "product_detail/$productId"
     }
+    
+    // Customer order screens
+    object OrderHistory : Route("order_history")
+    object OrderTracking : Route("order_tracking/{orderId}") {
+        fun createRoute(orderId: String) = "order_tracking/$orderId"
+    }
+    
+    // Admin screens
+    object AdminDashboard : Route("admin_dashboard")
+    object AdminOrders : Route("admin_orders")
+    object AdminOrderDetail : Route("admin_order_detail/{orderId}") {
+        fun createRoute(orderId: String) = "admin_order_detail/$orderId"
+    }
+    object CustomerDetails : Route("customer_details/{userId}") {
+        fun createRoute(userId: String) = "customer_details/$userId"
+    }
+    object AddProduct : Route("add_product")
 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,7 +26,9 @@ import com.depi.drlist.ui.components.ProductCard
 fun HomeScreen(
     viewModel: HomeViewModel = viewModel(),
     onCartClick: () -> Unit,
-    onProductClick: (Product) -> Unit
+    onProductClick: (Product) -> Unit,
+    onAdminDashboardClick: () -> Unit = {},
+    isAdmin: Boolean = false
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -42,6 +45,14 @@ fun HomeScreen(
                     )
                 },
                 actions = {
+                    if (isAdmin) {
+                        IconButton(onClick = onAdminDashboardClick) {
+                            Icon(
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = "Admin Dashboard"
+                            )
+                        }
+                    }
                     BadgedBox(
                         badge = {
                             if (uiState is HomeUiState.Success) {

@@ -31,6 +31,13 @@ import androidx.navigation.navArgument
 import com.depi.drlist.ui.screens.detail.ProductDetailScreen
 import com.depi.drlist.ui.screens.reset.PasswordResetViewModel
 import com.depi.drlist.ui.screens.search.SearchScreen
+import com.depi.drlist.ui.screens.admin.dashboard.AdminDashboardScreen
+import com.depi.drlist.ui.screens.admin.orders.AdminOrdersScreen
+import com.depi.drlist.ui.screens.admin.orders.AdminOrderDetailScreen
+import com.depi.drlist.ui.screens.admin.customers.CustomerDetailsScreen
+import com.depi.drlist.ui.screens.admin.products.AddProductScreen
+import com.depi.drlist.ui.screens.orders.OrderHistoryScreen
+import com.depi.drlist.ui.screens.orders.OrderTrackingScreen
 
 sealed class BottomNavItem(
     val route: String,
@@ -82,6 +89,7 @@ fun AppNavigation() {
         composable(Route.Home.route) {
             MainScreen(
                 navController = navController,
+                currentUser = currentUser,
                 onSignOut = {
                     loginViewModel.signOut()
                     navController.navigate(Route.Login.route) {
@@ -115,12 +123,94 @@ fun AppNavigation() {
                 }
             )
         }
+
+        // Customer order screens
+        composable(Route.OrderHistory.route) {
+            OrderHistoryScreen(
+                onOrderClick = { orderId ->
+                    navController.navigate(Route.OrderTracking.createRoute(orderId))
+                },
+                onBackClick = { navController.navigateUp() }
+            )
+        }
+
+        composable(
+            route = Route.OrderTracking.route,
+            arguments = listOf(navArgument("orderId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val orderId = backStackEntry.arguments?.getString("orderId") ?: return@composable
+            OrderTrackingScreen(
+                orderId = orderId,
+                onBackClick = { navController.navigateUp() }
+            )
+        }
+
+        // Admin screens
+        composable(Route.AdminDashboard.route) {
+            AdminDashboardScreen(
+                onNavigateToOrders = {
+                    navController.navigate(Route.AdminOrders.route)
+                },
+                onNavigateToAddProduct = {
+                    navController.navigate(Route.AddProduct.route)
+                },
+                onNavigateToOrderDetail = { orderId ->
+                    navController.navigate(Route.AdminOrderDetail.createRoute(orderId))
+                },
+                onBackClick = { navController.navigateUp() }
+            )
+        }
+
+        composable(Route.AdminOrders.route) {
+            AdminOrdersScreen(
+                onOrderClick = { orderId ->
+                    navController.navigate(Route.AdminOrderDetail.createRoute(orderId))
+                },
+                onBackClick = { navController.navigateUp() }
+            )
+        }
+
+        composable(
+            route = Route.AdminOrderDetail.route,
+            arguments = listOf(navArgument("orderId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val orderId = backStackEntry.arguments?.getString("orderId") ?: return@composable
+            AdminOrderDetailScreen(
+                orderId = orderId,
+                onNavigateToCustomer = { userId ->
+                    navController.navigate(Route.CustomerDetails.createRoute(userId))
+                },
+                onBackClick = { navController.navigateUp() }
+            )
+        }
+
+        composable(
+            route = Route.CustomerDetails.route,
+            arguments = listOf(navArgument("userId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId") ?: return@composable
+            CustomerDetailsScreen(
+                userId = userId,
+                onOrderClick = { orderId ->
+                    navController.navigate(Route.AdminOrderDetail.createRoute(orderId))
+                },
+                onBackClick = { navController.navigateUp() }
+            )
+        }
+
+        composable(Route.AddProduct.route) {
+            AddProductScreen(
+                onProductAdded = { navController.navigateUp() },
+                onBackClick = { navController.navigateUp() }
+            )
+        }
     }
 }
 
 @Composable
 fun MainScreen(
     navController: androidx.navigation.NavHostController,
+    currentUser: com.depi.drlist.data.model.User?,
     onSignOut: () -> Unit
 ) {
     val mainNavController = rememberNavController()
@@ -168,7 +258,11 @@ fun MainScreen(
                     },
                     onProductClick = { product ->
                         navController.navigate(Route.ProductDetail.createRoute(product.id))
-                    }
+                    },
+                    onAdminDashboardClick = {
+                        navController.navigate(Route.AdminDashboard.route)
+                    },
+                    isAdmin = currentUser?.isAdmin ?: false
                 )
             }
 
@@ -213,7 +307,10 @@ fun MainScreen(
                             popUpTo(BottomNavItem.Home.route) { inclusive = true }
                         }
                     },
-                    onSignOutClick = onSignOut
+                    onSignOutClick = onSignOut,
+                    onViewOrderHistory = {
+                        navController.navigate(Route.OrderHistory.route)
+                    }
                 )
             }
         }
