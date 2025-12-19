@@ -58,7 +58,14 @@ class ProductDetailViewModel : ViewModel() {
 
         _addToCartState.value = AddToCartState.Loading
         viewModelScope.launch {
-            cartRepository.addToCart(userId, product, selectedSize, quantity)
+            val cartItem = CartItem(
+                productId = product.id,
+                product = product,
+                quantity = quantity,
+                selectedSize = selectedSize,
+                totalPrice = product.price * quantity
+            )
+            cartRepository.addToCart(cartItem)
                 .onSuccess {
                     _addToCartState.value = AddToCartState.Success
                 }

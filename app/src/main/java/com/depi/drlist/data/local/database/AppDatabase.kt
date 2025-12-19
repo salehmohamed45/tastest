@@ -42,6 +42,8 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "ecommerce_database"
                 )
+                    // TODO: For production, implement proper migration strategy
+                    // Currently using fallbackToDestructiveMigration for development
                     .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance

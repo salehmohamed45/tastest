@@ -272,7 +272,7 @@ fun SortDialog(
         title = { Text("Sort By") },
         text = {
             Column {
-                SortOption.values().forEach { option ->
+                SortOption.entries.forEach { option ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
