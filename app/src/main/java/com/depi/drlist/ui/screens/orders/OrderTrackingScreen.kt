@@ -206,7 +206,7 @@ private fun OrderTrackingContent(
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
-                    Divider()
+                    HorizontalDivider()
                     
                     InfoRow("Order ID", order.orderId.take(12))
                     InfoRow("Order Date", SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())

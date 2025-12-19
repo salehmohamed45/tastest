@@ -185,7 +185,7 @@ fun AddProductScreen(
                 )
             }
             
-            Divider()
+            HorizontalDivider()
             
             // Error Message
             if (uiState is AddProductUiState.Error) {
