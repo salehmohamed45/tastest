@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import com.depi.drlist.ui.navigation.AppNavigation
 import com.depi.drlist.ui.theme.DrListTheme
 
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

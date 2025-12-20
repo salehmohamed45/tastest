@@ -90,4 +90,20 @@ class ProductRepository {
             Result.failure(e)
         }
     }
+    // Admin method to delete product
+    suspend fun deleteProduct(productId: String): Result<Unit> {
+        return try {
+            firestore.collection("products")
+                .document(productId)
+                .delete()
+                .await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
 }
+
+

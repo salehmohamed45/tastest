@@ -38,6 +38,7 @@ import com.depi.drlist.ui.screens.admin.customers.CustomerDetailsScreen
 import com.depi.drlist.ui.screens.admin.products.AddProductScreen
 import com.depi.drlist.ui.screens.orders.OrderHistoryScreen
 import com.depi.drlist.ui.screens.orders.OrderTrackingScreen
+import com.depi.drlist.ui.screens.admin.products.AdminProductsScreen
 
 sealed class BottomNavItem(
     val route: String,
@@ -75,6 +76,13 @@ fun AppNavigation() {
                 }
             )
         }
+
+        composable(Route.AdminProducts.route) {
+            AdminProductsScreen(
+                onBackClick = { navController.navigateUp() }
+            )
+        }
+
 
         composable(Route.PasswordReset.route) {
             val passwordResetViewModel: PasswordResetViewModel = viewModel()
@@ -151,6 +159,9 @@ fun AppNavigation() {
                 onNavigateToOrders = {
                     navController.navigate(Route.AdminOrders.route)
                 },
+                onNavigateToProducts = {                     // 🆕 ADDED
+                    navController.navigate(Route.AdminProducts.route)
+                },
                 onNavigateToAddProduct = {
                     navController.navigate(Route.AddProduct.route)
                 },
@@ -161,7 +172,8 @@ fun AppNavigation() {
             )
         }
 
-        composable(Route.AdminOrders.route) {
+
+            composable(Route.AdminOrders.route) {
             AdminOrdersScreen(
                 onOrderClick = { orderId ->
                     navController.navigate(Route.AdminOrderDetail.createRoute(orderId))

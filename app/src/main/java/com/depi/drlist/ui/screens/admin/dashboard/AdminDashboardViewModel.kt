@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+
 data class DashboardStats(
     val totalOrders: Int = 0,
     val pendingOrders: Int = 0,
@@ -27,28 +28,28 @@ sealed class DashboardUiState {
 class AdminDashboardViewModel : ViewModel() {
     private val orderRepository = OrderRepository()
     private val productRepository = ProductRepository()
-    
+
     private val _uiState = MutableStateFlow<DashboardUiState>(DashboardUiState.Loading)
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
-    
+
     init {
         loadDashboardData()
     }
-    
+
     fun loadDashboardData() {
         viewModelScope.launch {
             _uiState.value = DashboardUiState.Loading
-            
+
             orderRepository.getAllOrders().fold(
                 onSuccess = { orders ->
                     val pendingOrders = orders.count { it.status == "Pending" }
-                    val completedOrders = orders.count { 
-                        it.status == "Delivered" || it.status == "Completed" 
+                    val completedOrders = orders.count {
+                        it.status == "Delivered" || it.status == "Completed"
                     }
-                    val totalRevenue = orders.filter { 
-                        it.status == "Delivered" || it.status == "Completed" 
+                    val totalRevenue = orders.filter {
+                        it.status == "Delivered" || it.status == "Completed"
                     }.sumOf { it.totalAmount }
-                    
+
                     val stats = DashboardStats(
                         totalOrders = orders.size,
                         pendingOrders = pendingOrders,
@@ -66,4 +67,12 @@ class AdminDashboardViewModel : ViewModel() {
             )
         }
     }
+
+    fun deleteProduct(productId: String) {
+        viewModelScope.launch {
+            productRepository.deleteProduct(productId)
+            loadDashboardData() // refresh dashboard after delete
+        }
+    }
+
 }
