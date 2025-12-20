@@ -15,6 +15,12 @@ sealed class AuthState {
     data class Error(val message: String) : AuthState()
 }
 
+// ✅ NEW: Loading state for initial auth check
+sealed class AuthCheckState {
+    data object Checking : AuthCheckState()
+    data object Completed : AuthCheckState()
+}
+
 class LoginViewModel : ViewModel() {
     private val authRepository = AuthRepository()
 
@@ -24,10 +30,15 @@ class LoginViewModel : ViewModel() {
     private val _currentUser = MutableStateFlow<User?>(null)
     val currentUser = _currentUser.asStateFlow()
 
+    // ✅ NEW: Track initial auth check
+    private val _authCheckState = MutableStateFlow<AuthCheckState>(AuthCheckState.Checking)
+    val authCheckState = _authCheckState.asStateFlow()
+
     init {
-        // Load current user on initialization
+        // ✅ Check auth immediately on ViewModel creation
         viewModelScope.launch {
             _currentUser.value = authRepository.getCurrentUser()
+            _authCheckState.value = AuthCheckState.Completed
         }
     }
 

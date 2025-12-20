@@ -40,10 +40,12 @@ fun HomeScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Men's Fashion Store",
+                        text = "TAS Collection",
                         fontWeight = FontWeight.Bold
                     )
                 },
+                modifier = Modifier.statusBarsPadding(),
+
                 actions = {
                     if (isAdmin) {
                         IconButton(onClick = onAdminDashboardClick) {
@@ -72,7 +74,7 @@ fun HomeScreen(
                     }
                 }
             )
-        }
+        },modifier = Modifier.statusBarsPadding()
     ) { paddingValues ->
         when (val state = uiState) {
             is HomeUiState.Loading -> {

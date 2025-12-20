@@ -1,6 +1,7 @@
 package com.depi.drlist.ui.screens.login
 
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,17 +14,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.depi.drlist.R
 
-enum class AuthScreenType {
-    LOGIN,
-    SIGNUP
-}
+enum class AuthScreenType { LOGIN, SIGNUP }
 
 @Composable
 fun LoginScreen(
@@ -51,251 +50,266 @@ fun LoginScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        // Header
-        AuthHeader()
 
-        // Tab Switcher
-        Column(
+        // ===== HEADER =====
+        AuthHeaderModern()
+
+        Spacer(Modifier.height(24.dp))
+
+
+        // ===== FORM CARD =====
+        Card(
             modifier = Modifier
-                .weight(1f)
                 .fillMaxWidth()
-                .padding(horizontal = 32.dp, vertical = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
+                .padding(horizontal = 20.dp)
+                .offset(y = (-24).dp),
+            shape = RoundedCornerShape(24.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.LightGray.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
-                    .padding(4.dp),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                AuthTabButton(
-                    text = "Login",
-                    isSelected = currentScreen == AuthScreenType.LOGIN,
-                    onClick = { currentScreen = AuthScreenType.LOGIN }
-                )
-                AuthTabButton(
-                    text = "Sign Up",
-                    isSelected = currentScreen == AuthScreenType.SIGNUP,
-                    onClick = { currentScreen = AuthScreenType.SIGNUP }
-                )
-            }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            when (currentScreen) {
-                AuthScreenType.LOGIN -> LoginForm(
-                    viewModel = viewModel, 
-                    authState = authState,
-                    onNavigateToPasswordReset = onNavigateToPasswordReset
+                // ===== TAB SWITCHER =====
+                AuthTabSwitcher(
+                    selected = currentScreen,
+                    onSelect = { currentScreen = it }
                 )
-                AuthScreenType.SIGNUP -> SignUpForm(viewModel = viewModel, authState = authState)
+
+                Spacer(Modifier.height(24.dp))
+
+                when (currentScreen) {
+                    AuthScreenType.LOGIN ->
+                        LoginForm(
+                            viewModel = viewModel,
+                            authState = authState,
+                            onNavigateToPasswordReset = onNavigateToPasswordReset
+                        )
+
+                    AuthScreenType.SIGNUP ->
+                        SignUpForm(
+                            viewModel = viewModel,
+                            authState = authState
+                        )
+                }
             }
         }
     }
 }
 
 @Composable
-fun AuthHeader() {
-    Column(
+private fun AuthHeaderModern() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(260.dp)
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        Color(0xFF1E3C72),
+                        Color(0xFF2A5298)
+                    )
+                )
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                contentDescription = "App Logo",
+                modifier = Modifier
+                    .size(160.dp)
+                    .padding(top = 24.dp)
+            )
+
+            Spacer(Modifier.height(12.dp))
+            Text(
+                "TAS Collection",
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+            Text(
+                "Modern style. Premium quality.",
+                fontSize = 14.sp,
+                color = Color.White.copy(alpha = 0.85f),
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+private fun AuthTabSwitcher(
+    selected: AuthScreenType,
+    onSelect: (AuthScreenType) -> Unit
+) {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(Color(0xFF2C3E50), Color(0xFF34495E))
-                ),
-                shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
+                MaterialTheme.colorScheme.surfaceVariant,
+                RoundedCornerShape(50)
             )
-            .padding(top = 48.dp, bottom = 32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .padding(4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Icon(
-            imageVector = Icons.Outlined.ShoppingBag,
-            contentDescription = "Store Logo",
-            tint = Color.White,
-            modifier = Modifier.size(64.dp)
+        AuthTab(
+            text = "Login",
+            selected = selected == AuthScreenType.LOGIN,
+            onClick = { onSelect(AuthScreenType.LOGIN) }
         )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Men's Fashion Store",
-            color = Color.White,
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.SansSerif
-        )
-        Text(
-            text = "Premium Clothing for Modern Men",
-            color = Color.White.copy(alpha = 0.8f),
-            fontSize = 16.sp,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 32.dp)
+        AuthTab(
+            text = "Sign Up",
+            selected = selected == AuthScreenType.SIGNUP,
+            onClick = { onSelect(AuthScreenType.SIGNUP) }
         )
     }
 }
 
 @Composable
-fun AuthTabButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
+private fun AuthTab(
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
     Button(
         onClick = onClick,
+        shape = RoundedCornerShape(50),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) Color(0xFF2C3E50) else Color.Transparent,
-            contentColor = if (isSelected) Color.White else Color.Gray
+            containerColor =
+                if (selected) MaterialTheme.colorScheme.primary
+                else Color.Transparent,
+            contentColor =
+                if (selected) Color.White
+                else MaterialTheme.colorScheme.onSurfaceVariant
         ),
-        shape = RoundedCornerShape(10.dp),
         elevation = ButtonDefaults.buttonElevation(
-            defaultElevation = if (isSelected) 4.dp else 0.dp
+            defaultElevation = if (selected) 6.dp else 0.dp
         )
     ) {
-        Text(text)
+        Text(text, fontWeight = FontWeight.Bold)
     }
 }
 
 @Composable
 fun LoginForm(
-    viewModel: LoginViewModel, 
+    viewModel: LoginViewModel,
     authState: AuthState,
-    onNavigateToPasswordReset: () -> Unit = {}
+    onNavigateToPasswordReset: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    Box(contentAlignment = Alignment.Center) {
-        Column(
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+        OutlinedTextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") },
             modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            shape = RoundedCornerShape(14.dp),
+            singleLine = true
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password") },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(14.dp),
+            visualTransformation = PasswordVisualTransformation(),
+            singleLine = true
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        TextButton(
+            onClick = onNavigateToPasswordReset,
+            modifier = Modifier.align(Alignment.End)
         ) {
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
-                singleLine = true
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Password") },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
-                visualTransformation = PasswordVisualTransformation(),
-                singleLine = true
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Forgot Password Link
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                androidx.compose.foundation.text.ClickableText(
-                    text = androidx.compose.ui.text.AnnotatedString("Forgot Password?"),
-                    onClick = { onNavigateToPasswordReset() },
-                    style = androidx.compose.ui.text.TextStyle(
-                        color = Color(0xFF2C3E50),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = { viewModel.signIn(email, password) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF2C3E50)
-                ),
-                enabled = authState != AuthState.Loading
-            ) {
-                Text("Login", fontSize = 18.sp)
-            }
+            Text("Forgot password?")
         }
 
-        if (authState == AuthState.Loading) {
-            CircularProgressIndicator()
+        Spacer(Modifier.height(20.dp))
+
+        Button(
+            onClick = { viewModel.signIn(email, password) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(54.dp),
+            shape = RoundedCornerShape(16.dp),
+            enabled = authState != AuthState.Loading
+        ) {
+            if (authState == AuthState.Loading)
+                CircularProgressIndicator(color = Color.White)
+            else
+                Text("Login", fontSize = 18.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
 
 @Composable
-fun SignUpForm(viewModel: LoginViewModel, authState: AuthState) {
+fun SignUpForm(
+    viewModel: LoginViewModel,
+    authState: AuthState
+) {
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    Box(contentAlignment = Alignment.Center) {
-        Column(
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+        OutlinedTextField(
+            value = fullName,
+            onValueChange = { fullName = it },
+            label = { Text("Full Name") },
             modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            shape = RoundedCornerShape(14.dp)
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(14.dp)
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password") },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(14.dp),
+            visualTransformation = PasswordVisualTransformation()
+        )
+
+        Spacer(Modifier.height(24.dp))
+
+        Button(
+            onClick = { viewModel.signUp(fullName, email, password) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(54.dp),
+            shape = RoundedCornerShape(16.dp),
+            enabled = authState != AuthState.Loading
         ) {
-            OutlinedTextField(
-                value = fullName,
-                onValueChange = { fullName = it },
-                label = { Text("Full Name") },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
-                singleLine = true
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
-                singleLine = true
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Password") },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
-                visualTransformation = PasswordVisualTransformation(),
-                singleLine = true
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Button(
-                onClick = { viewModel.signUp(fullName, email, password) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF34495E)
-                ),
-                enabled = authState != AuthState.Loading
-            ) {
-                Text("Sign Up", fontSize = 18.sp)
-            }
-        }
-
-        if (authState == AuthState.Loading) {
-            CircularProgressIndicator()
+            if (authState == AuthState.Loading)
+                CircularProgressIndicator(color = Color.White)
+            else
+                Text("Create Account", fontSize = 18.sp, fontWeight = FontWeight.Bold)
         }
     }
 }

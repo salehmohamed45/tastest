@@ -32,19 +32,33 @@ fun CartScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Shopping Cart", fontWeight = FontWeight.Bold) },
+                title = {
+                    Text(
+                        text = "Shopping Cart",
+                        fontWeight = FontWeight.Bold
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back"
+                        )
                     }
                 }
             )
-        }
+        },
+        // ✅ prevent double insets
+        contentWindowInsets = WindowInsets(0)
     ) { paddingValues ->
+
         when (val state = uiState) {
             is CartUiState.Loading -> {
-                LoadingIndicator(modifier = Modifier.padding(paddingValues))
+                LoadingIndicator(
+                    modifier = Modifier.padding(paddingValues)
+                )
             }
+
             is CartUiState.Success -> {
                 if (state.items.isEmpty()) {
                     EmptyCartState(
@@ -66,6 +80,7 @@ fun CartScreen(
                     )
                 }
             }
+
             is CartUiState.Error -> {
                 ErrorState(
                     message = state.message,
@@ -87,7 +102,8 @@ fun CartContent(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        // Cart Items List
+
+        // 🛒 Cart items
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
@@ -108,9 +124,11 @@ fun CartContent(
             }
         }
 
-        // Bottom Summary
+        // ✅ Bottom summary (handles navigation bar correctly)
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding(), // ⭐ KEY FIX
             shape = MaterialTheme.shapes.large,
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
@@ -121,6 +139,7 @@ fun CartContent(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -197,19 +216,25 @@ fun EmptyCartState(
                 modifier = Modifier.size(100.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
             )
+
             Spacer(modifier = Modifier.height(16.dp))
+
             Text(
                 text = "Your cart is empty",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
+
             Spacer(modifier = Modifier.height(8.dp))
+
             Text(
                 text = "Browse our products and add items to your cart",
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+
             Spacer(modifier = Modifier.height(24.dp))
+
             Button(
                 onClick = onBrowseClick,
                 modifier = Modifier

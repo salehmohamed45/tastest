@@ -25,15 +25,17 @@ class OrderRepository {
     suspend fun getUserOrders(): Result<List<Order>> {
         return try {
             val userId = auth.currentUser?.uid ?: return Result.failure(Exception("User not logged in"))
+
+            // ✅ FIX: Remove .orderBy() to avoid index requirement, sort in code instead
             val snapshot = firestore.collection("orders")
                 .whereEqualTo("userId", userId)
-                .orderBy("orderDate", Query.Direction.DESCENDING)
                 .get()
                 .await()
-            
+
             val orders = snapshot.documents.mapNotNull { doc ->
                 doc.toObject(Order::class.java)
-            }
+            }.sortedByDescending { it.orderDate } // ✅ Sort in code instead of Firestore
+
             Result.success(orders)
         } catch (e: Exception) {
             Result.failure(e)
@@ -57,14 +59,15 @@ class OrderRepository {
     // Admin methods
     suspend fun getAllOrders(): Result<List<Order>> {
         return try {
+            // ✅ FIX: Remove .orderBy() and sort in code
             val snapshot = firestore.collection("orders")
-                .orderBy("orderDate", Query.Direction.DESCENDING)
                 .get()
                 .await()
-            
+
             val orders = snapshot.documents.mapNotNull { doc ->
                 doc.toObject(Order::class.java)
-            }
+            }.sortedByDescending { it.orderDate } // ✅ Sort in code
+
             Result.success(orders)
         } catch (e: Exception) {
             Result.failure(e)
@@ -73,18 +76,19 @@ class OrderRepository {
 
     suspend fun searchOrders(query: String): Result<List<Order>> {
         return try {
+            // ✅ FIX: Remove .orderBy() and sort in code
             val snapshot = firestore.collection("orders")
-                .orderBy("orderDate", Query.Direction.DESCENDING)
                 .get()
                 .await()
-            
+
             val orders = snapshot.documents.mapNotNull { doc ->
                 doc.toObject(Order::class.java)
             }.filter { order ->
                 order.orderId.contains(query, ignoreCase = true) ||
-                order.userId.contains(query, ignoreCase = true) ||
-                order.status.contains(query, ignoreCase = true)
-            }
+                        order.userId.contains(query, ignoreCase = true) ||
+                        order.status.contains(query, ignoreCase = true)
+            }.sortedByDescending { it.orderDate } // ✅ Sort in code
+
             Result.success(orders)
         } catch (e: Exception) {
             Result.failure(e)
@@ -97,13 +101,13 @@ class OrderRepository {
             val orderDoc = firestore.collection("orders").document(orderId)
             val order = orderDoc.get().await().toObject(Order::class.java)
                 ?: return Result.failure(Exception("Order not found"))
-            
+
             val statusChange = OrderStatusChange(
                 status = newStatus,
                 timestamp = System.currentTimeMillis(),
                 changedBy = userId
             )
-            
+
             val updatedHistory = order.statusHistory + statusChange
             orderDoc.update(
                 mapOf(
@@ -119,15 +123,16 @@ class OrderRepository {
 
     suspend fun getOrdersByStatus(status: String): Result<List<Order>> {
         return try {
+            // ✅ FIX: Remove .orderBy() and sort in code
             val snapshot = firestore.collection("orders")
                 .whereEqualTo("status", status)
-                .orderBy("orderDate", Query.Direction.DESCENDING)
                 .get()
                 .await()
-            
+
             val orders = snapshot.documents.mapNotNull { doc ->
                 doc.toObject(Order::class.java)
-            }
+            }.sortedByDescending { it.orderDate } // ✅ Sort in code
+
             Result.success(orders)
         } catch (e: Exception) {
             Result.failure(e)
